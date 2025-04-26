@@ -39,6 +39,7 @@ Downloading BioVista according to the following links, and unzip them in the `./
 
 **Note 2**: Due to the copyright, for augmented images used for full structure corefernece recognition and Markush enumeration, we only provide the codes to generate augmented images based on pdfs. After downloading all pdfs, you can generate the augmented images based on our codes.
 
+**Note 3**: More details can be found in [here](./BioVista/)
 
 | **Tasks**    | **Metrics** | **Input** | **Ground-truth Labels** | **Download** |
 | ----------- | ----------- | ----------- | ----------- | ----------- | 
@@ -247,8 +248,41 @@ Valid Evaluate Num -- Bioactivity :  483 / 500
 Valid Evaluate Num -- Structure :  367 / 500
 ```
 
-<!-- ### Evaluation of Four Component-level Tasks:
-Coming soon. -->
+### Evaluation of Four Component-level Tasks:
+
+1. We first inference the result:
+    - Molecule Detection
+    ```
+    # Taking YOLO as an example (BioMiner use MolMiner + YOLO for tables)
+    python3 BioVista/component_infernece/molecule_detection/moldetect_inference_batch.py
+
+    ```
+
+    - OCSR
+    ```
+    # Taking MolScribe as an example (BioMiner use MolParser)
+    python3 BioVista/component_infernece/ocsr/molscribe_inference_batch.py
+
+    ```
+
+    - Full Structure Coreference Recognition
+    ```
+    # Run BioMiner Structure Extraction Agent
+    python3 BioVista/component_infernece/full_coreference/coreference_inference_batch_with_index_split_image_layout.py
+    ```
+
+    - Markush Enumeration
+    ```
+    # Run BioMiner Structure Extraction Agent
+    python3 BioVista/component_infernece/markush_enumerate/markush_zip_inference_batch_with_index_layout.py
+    ```
+
+2. We then evaluate the result:
+```
+python3 biovista_component_evaluate.py --config_path=BioVista/config/evaluate.yaml
+```
+
+
 
 ## Contributors
 **Student Contributors**: Jiaxian Yan*, Jintao Zhu*, Yuhang Yang, [Zaixi Zhang](https://zaixizhang.github.io/), Xukai Liu, Boyan Zhang, Kaiyuan Gao
@@ -269,4 +303,13 @@ If you encounter any issues, please reach out to jiaxianyan@mail.ustc.edu.cn.
 
 ## License
 This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE) for additional details.
+
+## Citation
+@article {Yan2025.04.22.648951,
+	author = {Yan, Jiaxian and Zhu, Jintao and Yang, Yuhang and Liu, Qi and Zhang, Kai and Zhang, Zaixi and Liu, Xukai and Zhang, Boyan and Gao, Kaiyuan and Xiao, Jinchuan and Chen, Enhong},
+	title = {BioMiner: A Multi-modal System for Automated Mining of Protein-Ligand Bioactivity Data from Literature},
+	year = {2025},
+	doi = {10.1101/2025.04.22.648951},
+	journal = {bioRxiv}
+}
 

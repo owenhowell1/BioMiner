@@ -2,6 +2,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import os
 import pickle
+import json
 from tqdm import tqdm
 from BioMiner.commons.utils import pmap_multi
 from BioMiner.commons.process_pdf import pdf_load_pypdf_images, image_segment_given_box_xywh, load_pdf_pages_contain_tables_and_figures
@@ -9,7 +10,7 @@ from BioMiner.commons.mineru_pdf import run_mineru, get_mineru_table_body_bbox, 
 from BioMiner.commons.mol_detection import run_yolo_batch, load_md_external_res, merge_full_page_and_seg_table_bbox
 from BioMiner.commons.ocsr import visualize_all_box, run_molscribe_batch, load_ocsr_external_res, prepare_full_markush_process
 from BioMiner.dataset.utils import load_prompts, bioactivity_prompt_strategy, structure_prompt_strategy
-from BioMiner.runner.extractor import extraction_ligand_structure_step, extraction_bioactivity_step, save_overall_result
+from BioMiner.runner.extractor import extraction_ligand_structure_step, extraction_bioactivity_step, save_overall_result, extract_markush_part_with_bbox_index_split_complex_image_seg_layout
 from BioMiner.runner.mllm import get_api_client
 from BioMiner.runner.metric_fn import resulter, evaluate_step
 
@@ -266,7 +267,7 @@ class BioMiner():
                 full_page_bboxes = load_md_external_res(os.path.join(self.external_full_md_res_dir, f'{name}.json'))
             ## yolo
             else:
-                full_bboxes_list = run_yolo_batch(name, page_image_paths, self.full_page_detection_path)
+                full_bboxes_list = run_yolo_batch(name, page_image_paths, self.full_page_detection_path, self.device)
                 full_page_bboxes = []
                 for page, bboxes in enumerate(full_bboxes_list):
                     full_page_bboxes.extend([{'page':page, 'bbox':bbox} for bbox in bboxes])
@@ -286,7 +287,7 @@ class BioMiner():
                     segmented_table_layouts.append(bbox)
                     segmented_table_pages.append(page)
 
-            seg_table_bboxes_list = run_yolo_batch(name, segmented_table_paths, self.seg_table_detection_path)
+            seg_table_bboxes_list = run_yolo_batch(name, segmented_table_paths, self.seg_table_detection_path, self.device)
             seg_table_bboxes = []
             for page, bboxes, layout in zip(segmented_table_pages, seg_table_bboxes_list, segmented_table_layouts):
                 seg_table_bboxes.append({'page':page, 'tb_layout_bbox':layout, 'bboxes':bboxes})
@@ -442,7 +443,7 @@ class BioMiner():
                 full_page_bboxes = load_md_external_res(os.path.join(self.external_full_md_res_dir, f'{name}.json'))
             ## yolo
             else:
-                full_bboxes_list = run_yolo_batch(name, page_image_paths, self.full_page_detection_path)
+                full_bboxes_list = run_yolo_batch(name, page_image_paths, self.full_page_detection_path, self.device)
                 full_page_bboxes = []
                 for page, bboxes in enumerate(full_bboxes_list):
                     full_page_bboxes.extend([{'page':page, 'bbox':bbox} for bbox in bboxes])
@@ -462,7 +463,7 @@ class BioMiner():
                     segmented_table_layouts.append(bbox)
                     segmented_table_pages.append(page)
 
-            seg_table_bboxes_list = run_yolo_batch(name, segmented_table_paths, self.seg_table_detection_path)
+            seg_table_bboxes_list = run_yolo_batch(name, segmented_table_paths, self.seg_table_detection_path, self.device)
             seg_table_bboxes = []
             for page, bboxes, layout in zip(segmented_table_pages, seg_table_bboxes_list, segmented_table_layouts):
                 seg_table_bboxes.append({'page':page, 'tb_layout_bbox':layout, 'bboxes':bboxes})
@@ -536,3 +537,61 @@ class BioMiner():
 
         return
 
+
+
+class BioMiner_Markush_Infernce(object):
+    def __init__(self, vision_mllm_type, markush_prompt_path, 
+                 image2bboxindex_path=None, layout_seg_json_path=None,
+                 context_examples=None, base_url=None, api_key=None):
+        with open(markush_prompt_path, 'r') as f:
+            self.markush_prompt = f.read().strip()
+        
+        self.vision_mllm_type = vision_mllm_type
+        self.base_url = base_url
+        self.api_key = api_key
+
+        self.image2bboxindex_path = image2bboxindex_path
+        self.layout_seg_json_path = layout_seg_json_path
+        self.context_examples = context_examples
+
+        if image2bboxindex_path is not None:
+            with open(image2bboxindex_path, 'r') as f:
+                image2bboxindex = json.load(f)
+            self.image2bboxindex = image2bboxindex
+
+        if layout_seg_json_path is not None:
+            with open(layout_seg_json_path, 'r') as f:
+                layoutsegbbox = json.load(f)
+            self.layoutsegbbox = layoutsegbbox
+
+    def markush_zip_with_index_batch_split_image_layout(self, image_paths, split_bbox_num, segment_image, cot=False):
+        
+        assert self.image2bboxindex_path is not None
+        assert self.layout_seg_json_path is not None
+        image_bbox_dicts = []
+        figure_table_layout_bboxs = []
+        for image_path in image_paths:
+            file_name = os.path.basename(image_path)
+            image_bbox_dicts.append(self.image2bboxindex[file_name])
+
+            file_name_items = file_name.split('.')[0].split('_')
+            pdf_idex = file_name_items[0]
+            pdf_pdb_name = file_name_items[1]
+            pdf_name = f'{pdf_idex}_{pdf_pdb_name}'
+            page_idx = file_name_items[-1]
+            
+            try:
+                figure_table_layout_bboxs.append(self.layoutsegbbox[pdf_name][page_idx])
+            except:
+                figure_table_layout_bboxs.append(None)
+
+        data_jsons = pmap_multi(extract_markush_part_with_bbox_index_split_complex_image_seg_layout, 
+                                zip(image_paths, image_bbox_dicts, figure_table_layout_bboxs),
+                                markush_prompt=self.markush_prompt,
+                                vision_mllm_type=self.vision_mllm_type,
+                                cot=cot, split_bbox_num=split_bbox_num,
+                                segment_image=segment_image,
+                                base_url=self.base_url, api_key=self.api_key,
+                                n_jobs=16, desc='extracting markush structures ')
+
+        return data_jsons

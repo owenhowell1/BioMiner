@@ -784,164 +784,14 @@ def extraction_specific_structure_bioactivity(bioactivity_data_list, structure_d
 
     return
 
-def extraction_step(name, pdf_text, pdf_image_paths, 
-                    pdf_augmented_full_image_paths, 
-                    pdf_augmented_part_image_paths, 
-                    pdf_index_smiles_pair_dict, 
-                    pdf_augmented_full_image_bbox_index_dict,
-                    pdf_augmented_part_image_bbox_index_dict, 
-                    full_page_figure_table_layout_bbox, 
-                    part_page_figure_table_layout_bbox,
-                    bioactivity_text_prompt, 
-                    bioactivity_image_prompt, 
-                    structure_full_prompt, 
-                    structure_part_prompt, 
-                    merge_strategy, 
-                    text_mllm_type, 
-                    vision_mllm_type,
-                    text_model_output_path, 
-                    vision_model_output_path,
-                    structure_full_suffix,
-                    structure_part_suffix,
-                    bioactivity_text_suffix,
-                    bioactivity_image_suffix,
-                    bioactivity_cot,
-                    structure_cot,
-                    overwrite_bioactivity_text,
-                    overwrite_bioactivity_image,
-                    split_bbox_num, 
-                    segment_image, 
-                    enlarge_size, 
-                    structure_full_layout_seg, 
-                    structure_part_layout_seg, 
-                    bbox_background,
-                    overwrite_structure_full, 
-                    overwrite_structure_part,
-                    pdb_structure_path,
-                    inference_given_structure_bioactivity):
-
-    # 1. set mllm api
-    text_mllm_client = runner.mllm.get_api_client(text_mllm_type)
-    vision_mllm_client = runner.mllm.get_api_client(vision_mllm_type)
-
-    # 2. call bindextractor for text, image bioactivity extraction 
-    bioactivity_data_list = extraction_bioactivity_step(name, 
-                                                    text_mllm_type, 
-                                                    text_mllm_client, 
-                                                    vision_mllm_type,
-                                                    vision_mllm_client,
-                                                    pdf_text,
-                                                    pdf_image_paths, 
-                                                    bioactivity_text_prompt,
-                                                    bioactivity_image_prompt, 
-                                                    merge_strategy,
-                                                    text_model_output_path, 
-                                                    vision_model_output_path,
-                                                    bioactivity_text_suffix,
-                                                    bioactivity_image_suffix,
-                                                    bioactivity_cot,
-                                                    overwrite_bioactivity_text,
-                                                    overwrite_bioactivity_image)
-
-    # 3. call bindextractor for ligand structure extraction
-    structure_data_list = extraction_ligand_structure_step(name, 
-                                                            vision_mllm_type, 
-                                                            vision_mllm_client,
-                                                            pdf_augmented_full_image_paths,
-                                                            pdf_augmented_part_image_paths, 
-                                                            pdf_index_smiles_pair_dict, 
-                                                            pdf_augmented_full_image_bbox_index_dict,
-                                                            pdf_augmented_part_image_bbox_index_dict, 
-                                                            full_page_figure_table_layout_bbox, 
-                                                            part_page_figure_table_layout_bbox,
-                                                            structure_full_prompt, 
-                                                            structure_part_prompt,
-                                                            vision_model_output_path,
-                                                            structure_full_suffix,
-                                                            structure_part_suffix,
-                                                            structure_cot, 
-                                                            split_bbox_num, 
-                                                            segment_image, 
-                                                            enlarge_size, 
-                                                            structure_full_layout_seg, 
-                                                            structure_part_layout_seg, 
-                                                            bbox_background,
-                                                            overwrite_structure_full, 
-                                                            overwrite_structure_part)
-
-    # 4. extract bioactivity for given protein-ligand structure
-    if inference_given_structure_bioactivity and pdb_structure_path is not None:
-        extraction_specific_structure_bioactivity(bioactivity_data_list, structure_data_list, name, pdb_structure_path,
-                                               vision_model_output_path, structure_full_suffix, structure_part_suffix)
-    # 5. save overall result
-    save_overall_result(name, bioactivity_data_list, structure_data_list,
-                        vision_model_output_path, structure_full_suffix, structure_part_suffix)
-
-    return 
-
-def extract_coreference_full(image_path, coreference_prompt, vision_mllm_type):
-    vision_mllm_client = runner.mllm.get_api_client(vision_mllm_type)
-    byte_io = io.BytesIO()
-    with Image.open(image_path) as img:
-        img.save(byte_io, format='png')
-    bytes_image = byte_io.getvalue()
-    image = base64.b64encode(bytes_image).decode('utf-8')
-
-    output_origin = runner.mllm.call_api_iamge(vision_mllm_client, coreference_prompt, vision_mllm_type, image)
-
-    output = runner.mllm.process_api_output(output_origin)
-    
-    try:
-        data_json_temp = json.loads(output)
-    except:
-        # usually losing '}' in long string output
-        output_temp = correct_output_failed_for_json(output)
-        try:
-            data_json_temp = json.loads(output_temp)
-        except:
-            print(f'Error image structure extraction: {image_path}')
-            data_json_temp = []
-
-    return data_json_temp
-
 def get_feedback_from_critic_agent():
 
     return
 
-def extract_markush_part(image_path, markush_prompt, vision_mllm_type):
-
-    vision_mllm_client = runner.mllm.get_api_client(vision_mllm_type)
-    byte_io = io.BytesIO()
-    with Image.open(image_path) as img:
-        img.save(byte_io, format='png')
-    bytes_image = byte_io.getvalue()
-    image = base64.b64encode(bytes_image).decode('utf-8')
-
-    output_origin = runner.mllm.call_api_iamge(vision_mllm_client, markush_prompt, vision_mllm_type, image)
-
-    output = runner.mllm.process_api_output(output_origin)
-    
-    try:
-        data_json_temp = json.loads(output)
-    except:
-        # usually losing '}' in long string output
-        output_temp = correct_output_failed_for_json(output)
-        try:
-            data_json_temp = json.loads(output_temp)
-        except:
-            print(f'Error image structure extraction: {image_path}')
-            data_json_temp = []
-    
-    if isinstance(data_json_temp, dict):
-        data_json_temp = [data_json_temp]
-
-    return data_json_temp
-
-
 def extract_markush_part_with_bbox_index(image_path, bbox_index, markush_prompt,
-                                         vision_mllm_type, cot):
+                                         vision_mllm_type, cot, base_url, api_key):
 
-    vision_mllm_client = runner.mllm.get_api_client(vision_mllm_type)
+    vision_mllm_client = runner.mllm.get_api_client(base_url, api_key)
     byte_io = io.BytesIO()
     with Image.open(image_path) as img:
         img.save(byte_io, format='png')
@@ -1113,12 +963,13 @@ def get_new_bbox_in_area(bbox, area_bbox):
 
 def extract_markush_part_with_bbox_index_split_complex_image(image_path, bbox_index_dict, 
                                                              markush_prompt, vision_mllm_type,
-                                                             cot, split_bbox_num, segment_image):
+                                                             cot, split_bbox_num, segment_image,
+                                                             base_url, api_key):
 
     segment_image_paths, segment_image_bbox_indexs = segment_image_to_new_images(image_path, bbox_index_dict, split_bbox_num, segment_image)
     data_json_total = []
     for current_split_seg_image_path, current_bbox_idx in zip(segment_image_paths, segment_image_bbox_indexs):
-        data_json_temp = extract_markush_part_with_bbox_index(current_split_seg_image_path, current_bbox_idx, markush_prompt, vision_mllm_type, cot)
+        data_json_temp = extract_markush_part_with_bbox_index(current_split_seg_image_path, current_bbox_idx, markush_prompt, vision_mllm_type, cot, base_url, api_key)
         data_json_total.extend(data_json_temp)
 
     return data_json_total
@@ -1179,3 +1030,26 @@ def segment_image_by_layout(image_path, figure_table_layout_bbox, bbox_index_dic
     return layout_seg_image_paths, layout_seg_image_bbox_index_dicts
         
 
+def extract_markush_part_with_bbox_index_split_complex_image_seg_layout(image_path, bbox_index_dict, figure_table_layout_bbox,
+                                                                        markush_prompt, vision_mllm_type,
+                                                                        cot, split_bbox_num, segment_image,
+                                                                        base_url, api_key):
+
+    if figure_table_layout_bbox is None:
+        figure_table_layout_bbox = [[0,0,1.0,1.0]]
+    else:
+        segment_image = False
+    layout_seg_image_paths, layout_seg_image_bbox_index_dicts = segment_image_by_layout(image_path, figure_table_layout_bbox, bbox_index_dict)
+    data_json_total = []
+
+    for layout_seg_image_path, layout_seg_image_bbox_index_dict in zip(layout_seg_image_paths, layout_seg_image_bbox_index_dicts):
+        # continue
+        if len(layout_seg_image_bbox_index_dict.keys()) == 0:
+            continue
+        data_json_temp = extract_markush_part_with_bbox_index_split_complex_image(layout_seg_image_path, layout_seg_image_bbox_index_dict, 
+                                                                                    markush_prompt, vision_mllm_type,
+                                                                                    cot, split_bbox_num, segment_image,
+                                                                                    base_url, api_key)
+        data_json_total.extend(data_json_temp)
+
+    return data_json_total

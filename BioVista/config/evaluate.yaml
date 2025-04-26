@@ -1,0 +1,14 @@
+file_name: BioVista/bioactivity_extraction/data/file_names.txt
+parse_dir: BioMiner/example_log/page_images
+
+ocsr_gd: BioVista/ocsr/labels/gd_SMIELS.csv
+ocsr_pred: BioVista/component_result/molscribe_ocsr_smiles.csv
+
+moldetect_gd: BioVista/molecule_detection/labels
+moldetect_pred: BioVista/component_result/molecule_deteciton/YOLO_box_640
+
+coreference_gd: BioVista/full_coreference/labels
+coreference_pred: BioVista/component_result/full_coreference/gemini-2.0-flash
+
+markush_gd: BioVista/markush_enumeration/labels
+markush_pred: BioVista/component_result/markush_enumerate/gemini-2.0-flash
