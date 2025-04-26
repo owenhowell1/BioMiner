@@ -255,14 +255,12 @@ Valid Evaluate Num -- Structure :  367 / 500
     ```
     # Taking YOLO as an example (BioMiner use MolMiner + YOLO for tables)
     python3 BioVista/component_infernece/molecule_detection/moldetect_inference_batch.py
-
     ```
 
     - OCSR
     ```
     # Taking MolScribe as an example (BioMiner use MolParser)
     python3 BioVista/component_infernece/ocsr/molscribe_inference_batch.py
-
     ```
 
     - Full Structure Coreference Recognition

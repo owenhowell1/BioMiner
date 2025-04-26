@@ -25,7 +25,6 @@ Put the downloaded pdfs in directory you want, for example `example/pdfs`.
 
 ```
 python3 BioVista/generate_augmented_images.py --pdf_dir=example/pdfs
-
 ```
 
 
