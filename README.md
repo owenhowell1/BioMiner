@@ -47,8 +47,8 @@ Downloading BioVista according to the following links, and unzip them in the `./
 |  Structure-Bioactivity Annotation | Recall@N | 500 structure-paper pairs |  500 structure-bioactivity pairs | [Link](https://drive.google.com/file/d/1cLC3NePtxctIurnCVaNLw0JzBWYrWTVW/view?usp=drive_link) | 
 |  Molecule Detection | Average Precision | 500 Papers | 11,212 boundary boxes  | [Link](https://drive.google.com/file/d/1SvsdgrizDqg5V-MGXEPGMmu4JmmhiFae/view?usp=drive_link) | 
 |  OCSR | Accuracy | 8,861 2D molecule structure depictions | 8,861 SMILES  | [Link](https://drive.google.com/file/d/11iCH0j7U9iFgwXahjkWZouNyqATfEPoL/view?usp=drive_link) | 
-|  Full Structure Coreference Recognition | F1, Precision, Recall | 962 Augmented Images | 5,105 full structure-coreference pairs | [Link](https://drive.google.com/file/d/13UXEEV3lSEu-H5ZHtuDP3FT0kkYqmCpp/view?usp=drive_link) | 
-|  Markush Enumeration | F1, Precision, Recall | 355 Augmented Images | 3,513 Markush Scaffold-R Group-Coreference Pairs | [Link](https://drive.google.com/file/d/1UAVxjqtB9HL5uUF3HqYfsvGsYFK3-nFk/view?usp=drive_link) | 
+|  Full Structure Coreference Recognition | F1, Precision, Recall | 962 Augmented Images | 5,105 full structure-coreference pairs | [Link](https://drive.google.com/file/d/14_BREaWgJOIjgVAkCEMwbXKRKsmqpTgu/view?usp=drive_link) | 
+|  Markush Enumeration | F1, Precision, Recall | 355 Augmented Images | 3,513 Markush Scaffold-R Group-Coreference Pairs | [Link](https://drive.google.com/file/d/19WrleiHQY6v6srZEWlKvl-uPlx0wiaLa/view?usp=drive_link) | 
 
 ## Statistics and Access of BioMiner Constructed Database
 With BioMiner, we construct three databases, namely the EJMC bioactivity database, NLRP3 bioactivity database, and PoseBuster structure-bioactivity database.
@@ -305,6 +305,7 @@ If you encounter any issues, please reach out to jiaxianyan@mail.ustc.edu.cn.
 This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE) for additional details.
 
 ## Citation
+```
 @article {Yan2025.04.22.648951,
 	author = {Yan, Jiaxian and Zhu, Jintao and Yang, Yuhang and Liu, Qi and Zhang, Kai and Zhang, Zaixi and Liu, Xukai and Zhang, Boyan and Gao, Kaiyuan and Xiao, Jinchuan and Chen, Enhong},
 	title = {BioMiner: A Multi-modal System for Automated Mining of Protein-Ligand Bioactivity Data from Literature},
@@ -312,4 +313,4 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
 	doi = {10.1101/2025.04.22.648951},
 	journal = {bioRxiv}
 }
-
+```
