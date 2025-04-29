@@ -1,6 +1,7 @@
 # BioMiner: A Multi-modal System for Automated Mining of Protein-Ligand Bioactivity Data from Literature
 ## Introduction
-This is the official implement of automated protein-ligand bioactivity data extraction tool BioMiner and benchmark BioVista. If you encounter any issues, please reach out to jiaxianyan@mail.ustc.edu.cn.
+This is the official implement for paper [BioMiner: A Multi-modal System for Automated Mining of Protein-Ligand Bioactivity Data from Literature](https://www.biorxiv.org/content/10.1101/2025.04.22.648951v1).
+If you encounter any issues, please reach out to jiaxianyan@mail.ustc.edu.cn.
 
 - We introduce **BioMiner**, a multi-modal system integrating multi-modal large language models (MLLMs), domain-specific models (DSMs), and domain tools (DTs) to automatically extract protein-ligand-bioactivity triplets from thousands to potentially millions of publications at high throughput (about 14 seconds/paper). 
 
