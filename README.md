@@ -289,6 +289,10 @@ python3 biovista_component_evaluate.py --config_path=BioVista/config/evaluate.ya
 
 **Affiliation**: State Key Laboratory of Cognitive Intelligence, USTC
 
+## TODO
+- [ ] Online web
+- [ ] BioMiner patent-version 
+
 ## Acknowledgement
 We thank for Xi Fang from DP Tech for the support of [MolParser](https://arxiv.org/abs/2411.11098). 
 We thank Shuaipeng Zhang from Infinite Intelligence Pharma for the support of [MolMiner](https://pubs.acs.org/doi/10.1021/acs.jcim.2c00733).
