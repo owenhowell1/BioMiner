@@ -288,7 +288,8 @@ python3 biovista_component_evaluate.py --config_path=BioVista/config/evaluate.ya
 
 **Supervisors**: [Qi Liu](http://staff.ustc.edu.cn/~qiliuql/), [Kai Zhang](http://home.ustc.edu.cn/~sa517494/)
 
-**Affiliation**: State Key Laboratory of Cognitive Intelligence, USTC
+**Affiliation**: State Key Laboratory of Cognitive Intelligence, USTC; Peking University; Princeton University; Huazhong University of Science and
+Technology; Infinite Intelligence Pharma
 
 ## TODO
 - [ ] Online web
