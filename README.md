@@ -309,6 +309,7 @@ If you encounter any issues, please reach out to jiaxianyan@mail.ustc.edu.cn.
 This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE) for additional details.
 
 ## Citation
+If you find our work helpful, please kindly cite:
 ```
 @article {Yan2025.04.22.648951,
 	author = {Yan, Jiaxian and Zhu, Jintao and Yang, Yuhang and Liu, Qi and Zhang, Kai and Zhang, Zaixi and Liu, Xukai and Zhang, Boyan and Gao, Kaiyuan and Xiao, Jinchuan and Chen, Enhong},
