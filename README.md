@@ -72,6 +72,8 @@ Here, we provide **two version of BioMiner**, and introduce their installation a
 - (i) the **best performance version**, using MolMiner and MolParser for molecule detection and OCSR
 - (ii) the **completely open-source version**, using YOLO and MolScribe for molecule detection and OCSR
 
+:tada: **After communicating with the authors of MolParser, they will release the code in the short future**
+
 We choice the MLLM, molecule detection and OCSR models based on their performance on BioVista:
 
 - Molecule Detection Performance:
