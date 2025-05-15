@@ -3,13 +3,32 @@ import json
 from BioMiner.commons.process_pdf import draw_bbox_xywh
 from PIL import Image, ImageDraw, ImageFont
 from collections import defaultdict
-
 try:
     from ultralytics import YOLO
-    det_model = YOLO("BioMiner/commons/MOL-v11l-241113.pt")
 except:
     print(f'ultralytics is not installed in this environment')
-    print(f'failed to load YOLO for molecule detection')
+
+class ModelSingleton:
+    _instance = None
+    _det_model = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(ModelSingleton, cls).__new__(cls)
+        return cls._instance
+
+    def get_model(self, YOLO_model, device):
+        if self._det_model is None:
+            try:
+                if YOLO_model == 'MOL-v11l-241113.pt':
+                    self._det_model = YOLO("BioMiner/commons/MOL-v11l-241113.pt").to(device)
+                else:
+                    self._det_model = YOLO("BioMiner/commons/moldet_yolo11l_960_doc.pt").to(device)
+            except Exception as e:
+                print(f"Failed to load YOLO model: {e}")
+                self._det_model = None
+        return self._det_model
+
 
 
 def load_md_external_res(res_json_file):
@@ -22,9 +41,17 @@ def load_md_external_res(res_json_file):
 
     return molminer_bbox
 
-def run_yolo(imgs, save_paths, iou_threshold=0.85):
+def run_yolo(imgs, save_paths, device, YOLO_model='moldet_yolo11l_960_doc', iou_threshold=0.85):
 
-    results1 = det_model.predict(imgs, imgsz=640, conf=0.5)  # 模型预测结果
+    det_model = ModelSingleton().get_model(YOLO_model, device)
+    if det_model is None:
+        print("Model loading failed, returning empty results")
+        return [], []
+
+    if YOLO_model == 'MOL-v11l-241113.pt':
+        results1 = det_model.predict(imgs, imgsz=640, conf=0.5)  # 模型预测结果
+    else:
+        results1 = det_model.predict(imgs, imgsz=960, conf=0.5)  # 模型预测结果
     all_mols = []
     all_bboxes = []
     
@@ -68,25 +95,28 @@ def run_yolo(imgs, save_paths, iou_threshold=0.85):
 
     return all_mols, all_bboxes
 
-def run_yolo_single(image_path, save_dir):
+def run_yolo_single(image_path, save_dir, device):
     save_path = os.path.join(save_dir, os.path.basename(image_path))
     img = Image.open(image_path)
-    _, bboxes = run_yolo([img], [save_path])
+    _, bboxes = run_yolo([img], [save_path], device)
     return bboxes
 
 
-def run_yolo_batch(name, image_path_batch, save_dir, batch_size=64):
+def run_yolo_batch(name, image_path_batch, save_dir, device, batch_size=64):
     os.makedirs(os.path.join(save_dir, name), exist_ok=True)
 
+    total_imgs, total_all_bboxes = [], []
     for idx in range(0, len(image_path_batch), batch_size):
         iamge_paths_temp = image_path_batch[idx:idx + batch_size]
 
         imgs = [Image.open(img_path) for img_path in iamge_paths_temp]
+        total_imgs.extend(imgs)
         save_paths = [os.path.join(save_dir, name, os.path.basename(img_path))  for img_path in iamge_paths_temp]
 
-        _, all_bboxes = run_yolo(imgs, save_paths)
+        _, all_bboxes = run_yolo(imgs, save_paths, device)
+        total_all_bboxes.extend(all_bboxes)
 
-    return all_bboxes
+    return total_all_bboxes
 
 
 def check_bbox_cross_area(bbox, area_bbox):

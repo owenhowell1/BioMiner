@@ -70,7 +70,7 @@ Among then, MolMiner and MolParser provide platform and website, while they have
 
 Here, we provide **two version of BioMiner**, and introduce their installation and usage:
 - (i) the **best performance version**, using MolMiner and MolParser for molecule detection and OCSR
-- (ii) the **completely open-source version**, using YOLO and MolScribe for molecule detection and OCSR
+- (ii) the **completely open-source version**, using [MolDet](https://huggingface.co/AI4Industry/MolDet) and MolScribe for molecule detection and OCSR
 
 :tada: **After communicating with the authors of MolParser, they will release the code in the short future**
 
@@ -78,13 +78,13 @@ We choice the MLLM, molecule detection and OCSR models based on their performanc
 
 - Molecule Detection Performance:
 
-|Metrics | YOLO | MolMiner  | **BioMiner** |
-| ----------- | ----------- | ----------- | ----------- | 
-|mAP | 0.648 | **0.878** |  0.857 |
-|AP50 | 0.846 | 0.899 | **0.929** |
-|AP75 | 0.752 | 0.876 |  **0.892** |
-|AP-Small | 0.000 | 0.000 |  **0.185** |
-|AP-Large | 0.720 | **0.932** | 0.922 |
+|Metrics | YOLO | MolDet | MolMiner  | **BioMiner** |
+| ----------- | ----------- | ----------- | ----------- | ----------- | 
+|mAP | 0.648 | 0.778 | **0.878** |  0.857 |
+|AP50 | 0.846 | 0.910 | 0.899 | **0.929** |
+|AP75 | 0.752 | 0.851 | 0.876 |  **0.892** |
+|AP-Small | 0.000 | 0.034 | 0.000 |  **0.185** |
+|AP-Large | 0.720 | 0.846 | **0.932** | 0.922 |
 
 - OCSR Performance:
 
