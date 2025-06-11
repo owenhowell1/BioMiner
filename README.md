@@ -74,6 +74,11 @@ Here, we provide **two version of BioMiner**, and introduce their installation a
 
 :tada: **After communicating with the authors of MolParser, they will release the code in the short future**
 
+**Note 1:** As shown in the following table, the open-source MolScribe cannot predict markush structures well, so the open-source version BioMiner thus tends to process Markush structures incorrectly. 
+
+**Note 2:** We will release our own open-source OCSR model **MolGlyph** in this month (2025.06)
+
+
 We choice the MLLM, molecule detection and OCSR models based on their performance on BioVista:
 
 - Molecule Detection Performance:
@@ -299,6 +304,7 @@ Technology; Infinite Intelligence Pharma
 - [ ] Online web
 - [ ] BioMiner pypi install
 - [ ] BioMiner patent-version 
+- [ ] Open-source OCSR model MolGlyph
 
 ## Acknowledgement
 We thank for Xi Fang from DP Tech for the support of [MolParser](https://arxiv.org/abs/2411.11098). 
