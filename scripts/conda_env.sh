@@ -22,14 +22,6 @@ pip3 install huggingface-hub
 pip3 install SmilesPE
 pip3 install OpenNMT-py==2.2.0
 pip3 install lmdb Bio easydict prody biopython traitlets
-pip3 install -U magic-pdf[full] --extra-index-url https://wheels.myhloli.com
-magic-pdf --version
-pip3 install modelscope
-wget https://gcore.jsdelivr.net/gh/opendatalab/MinerU@master/scripts/download_models.py -O download_models.py
-python3 download_models.py
-python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
-wget https://github.com/opendatalab/MinerU/raw/master/demo/pdfs/small_ocr.pdf
-magic-pdf -p small_ocr.pdf -o ./output
 pip3 install fastapi
 pip3 install litserve
 pip3 install filetype
@@ -42,3 +34,9 @@ conda install -y -c conda-forge pyyaml
 conda install -y -c conda-forge psutil
 conda install -y -c anaconda scikit-learn
 conda install -y -c conda-forge openbabel
+pip3 install -U magic-pdf[full]==1.3.1 --extra-index-url https://wheels.myhloli.com
+magic-pdf --version
+pip3 install modelscope
+python3 download_models.py
+python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+magic-pdf -p small_ocr.pdf -o ./output
