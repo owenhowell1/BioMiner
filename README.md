@@ -76,10 +76,11 @@ Here, we provide **two version of BioMiner**, and introduce their installation a
 
 **Note 1:** As shown in the following table, the open-source MolScribe cannot predict markush structures well, so the open-source version BioMiner thus tends to process Markush structures incorrectly. 
 
-**Note 2:** We will release our own open-source OCSR model **MolGlyph** in this month (2025.06)
+**Note 2:** We have provided the inference result of MolParser on BioVista for result reproduction
 
+**Note 3:** We will release our own open-source OCSR model [**MolGlyph**](https://github.com/jiaxianyan/MolGlyph) in this month (2025.06)
 
-We choice the MLLM, molecule detection and OCSR models based on their performance on BioVista:
+We choose the MLLM, molecule detection and OCSR models based on their performance on BioVista:
 
 - Molecule Detection Performance:
 
@@ -153,7 +154,7 @@ python3 example.py --config_path=BioMiner/config/default.yaml --pdf=example/pdfs
 18    NOTUM     21  IC50            1.6   μM                  Cc1ccccc1OCC(=O)Nc1ccccc1
 20    NOTUM     24  IC50           0.21   μM                Cc1ccccc1OCC(=O)Nc1ccn(C)n1
 21    NOTUM     26  IC50           0.33   μM          Cc1ccccc1OCC(=O)Nc1ccc2cc[nH]c2c1
-22    NOTUM     27  IC50            100   μM            Cc1ccccc1OCC(=O)Nc1ccc2nccnc2c1
+22    NOTUM     27  IC50            100   μM            Cc1ccccc1OCC(=O)Nc1ccc2nccnc2c1 
 23    NOTUM     28  IC50           0.68   μM          Cc1ccccc1OCC(=O)Nc1ccc2[nH]ccc2c1
 24    NOTUM     30  IC50           0.24   μM          Cc1ccccc1OCC(=O)Nc1ccc2c(c1)ncn2C
 ...
