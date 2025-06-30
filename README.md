@@ -108,11 +108,55 @@ All | 0.507 | 0.455 | 0.401 | 0.298 | **0.703** |
 
 ### The Best Performance Version
 
+We provide two ways to install this version.
+
+#### 1. Install key packages one by one 
+
 We provide a script **conda_env.sh** that makes it easy to install the python dependencies of BioMiner. You just need to modify several packages according to you cuda version.
 ```
 conda create -y -n BioMiner python=3.10
 conda activate BioMiner
+
+# Install key packages
 bash ./scripts/conda_env.sh
+
+# Install MinerU. 
+# Prepare MinerU config json
+mv magic-pdf.json ~
+# Install MinerU v1.3.1 (cpu version first)
+pip3 install -U magic-pdf[full]==1.3.1 --extra-index-url https://wheels.myhloli.com
+# Check if install cpu version successfully
+magic-pdf --version
+# for cpu version, it takes several minutes to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
+# Install MinerU gpu version
+python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+# Download MinerU model checkpoints
+python download_models.py
+# for gpu version, it only takes several seconds to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
+```
+
+#### 2. Install from yaml file
+```
+conda env create -f environment.yml
+conda activate BioMiner
+
+# Install MinerU. 
+# Prepare MinerU config json
+mv magic-pdf.json ~
+# Install MinerU v1.3.1 (cpu version first)
+pip3 install -U magic-pdf[full]==1.3.1 --extra-index-url https://wheels.myhloli.com
+# Check if install cpu version successfully
+magic-pdf --version
+# for cpu version, it takes several minutes to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
+# Install MinerU gpu version
+python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+# Download MinerU model checkpoints
+python download_models.py
+# for gpu version, it only takes several seconds to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
 ```
 
 ### The Completely Open-source Version

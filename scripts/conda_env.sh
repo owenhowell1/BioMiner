@@ -34,10 +34,3 @@ conda install -y -c conda-forge pyyaml
 conda install -y -c conda-forge psutil
 conda install -y -c anaconda scikit-learn
 conda install -y -c conda-forge openbabel
-mv magic-pdf.json ~
-pip3 install -U magic-pdf[full]==1.3.1 --extra-index-url https://wheels.myhloli.com
-magic-pdf --version
-pip3 install modelscope
-python3 download_models.py
-python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
-magic-pdf -p small_ocr.pdf -o ./output
