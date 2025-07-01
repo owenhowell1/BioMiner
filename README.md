@@ -78,7 +78,7 @@ Here, we provide **two version of BioMiner**, and introduce their installation a
 
 **Note 2:** We have provided the inference result of MolParser on BioVista for result reproduction
 
-**Note 3:** We will release our own open-source OCSR model [**MolGlyph**](https://github.com/jiaxianyan/MolGlyph) in this month (2025.06)
+**Note 3:** We will release our own open-source OCSR model [**MolGlyph**](https://github.com/jiaxianyan/MolGlyph) in this month (~~2025.06~~ 2025.07)
 
 We choose the MLLM, molecule detection and OCSR models based on their performance on BioVista:
 
