@@ -80,7 +80,7 @@ Here, we provide **two version of BioMiner**, and introduce their installation a
 
 **Note 3:** We have trained a Markush-augmented version of MolScribe, and you can download it from [checkpoint](https://drive.google.com/file/d/1FkkPCqPfwPAqkTcGum-IYYBBCwQ_1xWj/view?usp=sharing).
 
-**Note 3:** Besides waiting the release of MolParser, we are also developing our own open-source OCSR model [**MolGlyph**](https://github.com/jiaxianyan/MolGlyph). It is an independent project beyond BioMiner, and we will try to release it in this month (~~2025.06~~ 2025.07)
+**Note 4:** Besides waiting the release of MolParser, we are also developing our own open-source OCSR model [**MolGlyph**](https://github.com/jiaxianyan/MolGlyph). It is an independent project beyond BioMiner, and we will try to release it in this month (~~2025.06~~ 2025.07)
 
 We choose the MLLM, molecule detection and OCSR models based on their performance on BioVista:
 
@@ -99,7 +99,7 @@ We choose the MLLM, molecule detection and OCSR models based on their performanc
 Structure Types | MolMiner | MolScribe | MolNexTR | DECIMER | **MolScribe (Ours)** |**MolParser** |
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 Full | **0.774** | 0.703 | 0.695 | 0.545 | 0.633 | 0.669 |
-Chiral | **0.497** | 0.481 | 0.419 | 0.326 | 0.530 | 0.352 |
+Chiral | 0.497 | 0.481 | 0.419 | 0.326 | **0.530** | 0.352 |
 Markush | 0.185 | 0.156 | 0.045 | 0.000 | 0.635 | **0.733**|
 All | 0.507 | 0.455 | 0.401 | 0.298 | 0.634 | **0.703** |
 
