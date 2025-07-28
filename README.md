@@ -3,7 +3,7 @@
 This is the official implement for paper [BioMiner: A Multi-modal System for Automated Mining of Protein-Ligand Bioactivity Data from Literature](https://www.biorxiv.org/content/10.1101/2025.04.22.648951v1).
 If you encounter any issues, please reach out to jiaxianyan@mail.ustc.edu.cn.
 
-- We introduce **BioMiner**, a multi-modal system integrating multi-modal large language models (MLLMs), domain-specific models (DSMs), and domain tools (DTs) to automatically extract protein-ligand-bioactivity triplets from thousands to potentially millions of publications at high throughput (about 14 seconds/paper). 
+- We introduce **BioMiner**, a multi-modal system integrating multi-modal large language models (MLLMs), domain-specific models (DSMs), and domain tools (DTs) to automatically extract protein-ligand-bioactivity triplets from thousands to potentially millions of publications at high throughput (about 14 seconds/paper on 8 V100 GPUs). 
 
 - To evaluate extraction capabilities and support method development, we establish a new benchmark **BioVista**, containing 16,457 bioactivity and 8,735 structures manually collected from 500 publications. To our knowledge, **BioVista** is the largest benchmark dedicated to protein-ligand bioactivity extraction.
 
@@ -76,10 +76,13 @@ Here, we provide **two version of BioMiner**, and introduce their installation a
 
 **Note 1:** As shown in the following table, the open-source MolScribe cannot predict markush structures well, so the open-source version BioMiner thus tends to process Markush structures incorrectly. 
 
-**Note 2:** We will release our own open-source OCSR model **MolGlyph** in this month (2025.06)
+**Note 2:** We have provided the inference result of MolParser on BioVista for result reproduction
 
+**Note 3:** We have trained a Markush-augmented version of MolScribe, and you can download it from [checkpoint](https://drive.google.com/file/d/1FkkPCqPfwPAqkTcGum-IYYBBCwQ_1xWj/view?usp=sharing).
 
-We choice the MLLM, molecule detection and OCSR models based on their performance on BioVista:
+**Note 4:** Besides waiting the release of MolParser, we are also developing our own open-source OCSR model [**MolGlyph**](https://github.com/jiaxianyan/MolGlyph). It is an independent project beyond BioMiner, and we will try to release it in this month (~~2025.06~~ 2025.07)
+
+We choose the MLLM, molecule detection and OCSR models based on their performance on BioVista:
 
 - Molecule Detection Performance:
 
@@ -93,12 +96,12 @@ We choice the MLLM, molecule detection and OCSR models based on their performanc
 
 - OCSR Performance:
 
-Structure Types | MolMiner | MolScribe | MolNexTR | DECIMER | **MolParser** |
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | 
-Full | **0.774** | 0.703 | 0.695 | 0.545 | 0.669 |
-Chiral | **0.497** | 0.481 | 0.419 | 0.326 | 0.352 |
-Markush | 0.185 | 0.156 | 0.045 | 0.000 | **0.733**|
-All | 0.507 | 0.455 | 0.401 | 0.298 | **0.703** |
+Structure Types | MolMiner | MolScribe | MolNexTR | DECIMER | **MolScribe (Ours)** |**MolParser** |
+| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+Full | **0.774** | 0.703 | 0.695 | 0.545 | 0.633 | 0.669 |
+Chiral | 0.497 | 0.481 | 0.419 | 0.326 | **0.530** | 0.352 |
+Markush | 0.185 | 0.156 | 0.045 | 0.000 | 0.635 | **0.733**|
+All | 0.507 | 0.455 | 0.401 | 0.298 | 0.634 | **0.703** |
 
 - MLLM performance on MLLM-related tasks:
 
@@ -107,11 +110,55 @@ All | 0.507 | 0.455 | 0.401 | 0.298 | **0.703** |
 
 ### The Best Performance Version
 
+We provide two ways to install this version.
+
+#### 1. Install key packages one by one 
+
 We provide a script **conda_env.sh** that makes it easy to install the python dependencies of BioMiner. You just need to modify several packages according to you cuda version.
 ```
 conda create -y -n BioMiner python=3.10
 conda activate BioMiner
+
+# Install key packages
 bash ./scripts/conda_env.sh
+
+# Install MinerU. 
+# Prepare MinerU config json
+mv magic-pdf.json ~
+# Install MinerU v1.3.1 (cpu version first)
+pip3 install -U magic-pdf[full]==1.3.1 --extra-index-url https://wheels.myhloli.com
+# Check if install cpu version successfully
+magic-pdf --version
+# for cpu version, it takes several minutes to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
+# Install MinerU gpu version
+python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+# Download MinerU model checkpoints
+python download_models.py
+# for gpu version, it only takes several seconds to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
+```
+
+#### 2. Install from yaml file
+```
+conda env create -f environment.yml
+conda activate BioMiner
+
+# Install MinerU. 
+# Prepare MinerU config json
+mv magic-pdf.json ~
+# Install MinerU v1.3.1 (cpu version first)
+pip3 install -U magic-pdf[full]==1.3.1 --extra-index-url https://wheels.myhloli.com
+# Check if install cpu version successfully
+magic-pdf --version
+# for cpu version, it takes several minutes to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
+# Install MinerU gpu version
+python3 -m pip install paddlepaddle-gpu==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+# Download MinerU model checkpoints
+python download_models.py
+# for gpu version, it only takes several seconds to process a pdf
+magic-pdf -p small_ocr.pdf -o ./output
 ```
 
 ### The Completely Open-source Version
@@ -123,7 +170,10 @@ conda activate BioMiner_MolScribe
 bash ./scripts/conda_molscribe.sh
 ```
 
-Download the MolScribe [checkpoint](https://drive.google.com/file/d/1d_hJIHBVzc1aFbPjBndH6BvLkBlpCvMk/view?usp=sharing) to the path `BioMiner/MolScribe/ckpts/swin_base_char_aux_1m680k.pth`
+**Option 1**: Download the MolScribe [checkpoint](https://drive.google.com/file/d/1d_hJIHBVzc1aFbPjBndH6BvLkBlpCvMk/view?usp=sharing) to the path `BioMiner/MolScribe/ckpts/swin_base_char_aux_1m680k.pth`.
+
+**Option 2 (Recommended)**: Download **our Markush-augmented version** of MolScribe [checkpoint](https://drive.google.com/file/d/1FkkPCqPfwPAqkTcGum-IYYBBCwQ_1xWj/view?usp=sharing) to the path `BioMiner/MolScribe/ckpts/swin_base_char_aux_1m680k.pth`.
+
 
 ## Usage of BioMiner
 
@@ -141,7 +191,7 @@ conda activate BioMiner
 
 #### Input a pdf file
 ```
-python3 example.py --config_path=BioMiner/config/default.yaml --pdf=example/pdfs/68_6r8r.pdf --external_full_md_res_dir=example/full_md_molminer --external_ocsr_res_dir=example/ocsr_molparser 
+python3 example.py --config_path=BioMiner/config/default.yaml --pdf=example/pdfs/40_6s8a.pdf --external_full_md_res_dir=example/full_md_molminer --external_ocsr_res_dir=example/ocsr_molparser 
 ```
 **Output (Top-10 lines)**:
 ```
@@ -153,7 +203,7 @@ python3 example.py --config_path=BioMiner/config/default.yaml --pdf=example/pdfs
 18    NOTUM     21  IC50            1.6   μM                  Cc1ccccc1OCC(=O)Nc1ccccc1
 20    NOTUM     24  IC50           0.21   μM                Cc1ccccc1OCC(=O)Nc1ccn(C)n1
 21    NOTUM     26  IC50           0.33   μM          Cc1ccccc1OCC(=O)Nc1ccc2cc[nH]c2c1
-22    NOTUM     27  IC50            100   μM            Cc1ccccc1OCC(=O)Nc1ccc2nccnc2c1
+22    NOTUM     27  IC50            100   μM            Cc1ccccc1OCC(=O)Nc1ccc2nccnc2c1 
 23    NOTUM     28  IC50           0.68   μM          Cc1ccccc1OCC(=O)Nc1ccc2[nH]ccc2c1
 24    NOTUM     30  IC50           0.24   μM          Cc1ccccc1OCC(=O)Nc1ccc2c(c1)ncn2C
 ...
@@ -169,10 +219,10 @@ python3 example.py --config_path=BioMiner/config/default.yaml --pdf=example/pdfs
 
 ```
 conda activate BioMiner
-python3 example_open_source_one.py --config_path=BioMiner/config/default_open_source.yaml --pdf=example/pdfs/68_6r8r.pdf
+python3 example_open_source_one.py --config_path=BioMiner/config/default_open_source.yaml --pdf=example/pdfs/40_6s8a.pdf
 
 conda activate BioMiner_MolScribe
-python3 example_open_source_two.py --config_path=BioMiner/config/default_open_source.yaml --pdf=example/pdfs/68_6r8r.pdf 
+python3 example_open_source_two.py --config_path=BioMiner/config/default_open_source.yaml --pdf=example/pdfs/40_6s8a.pdf 
 ```
 
 ### Parameter Descriptor
